@@ -58,7 +58,39 @@ def visualize_model(model, num_images=6, model_name=cfg.model_name):
         model.train(mode=was_training)
     fig.savefig('{}_test.png'.format(model_name), dpi=100)
 
+def visualize_model_err(model, num_images=6, model_name=cfg.model_name):
+    was_training = model.training
+    model.eval()
+    images_so_far = 0
+    fig = plt.figure()
 
+    with torch.no_grad():
+        for i, (inputs, labels) in enumerate(dataloaders['val']):
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+
+            for j in range(inputs.size()[0]):
+                images_so_far += 1
+                ax = plt.subplot(num_images // 2, 2, images_so_far)
+                ax.axis('off')
+                ax.set_title('predicted: {}'.format(class_names[preds[j]]))
+                imshow(inputs.cpu().data[j])
+
+                if images_so_far == num_images:
+                    break
+
+            if images_so_far == num_images:
+                break
+
+        model.train(mode=was_training)
+    fig.savefig('{}_test.png'.format(model_name), dpi=100)
+
+
+# 获取训练好的模型
 model = cfg.getmodel(cfg.model_name, pretrained=False, local_weight=True)
 model = model.to(device)
+# 模型可视化
 visualize_model(model)
