@@ -1,2 +1,4 @@
-*./data/*
-*./weights/*
+data/
+weights/
+*.pyc
+.vscode/

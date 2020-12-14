@@ -1,0 +1,20 @@
+0: dataset_split
+    分割数据集, 可以把数据集图表代码放在这一部分
+
+1: image_dataset
+    创建 pytorch 输入的数据集, 预处理部分在这里
+
+2: classifier_train
+    训练模型, 边训练边测试
+
+3: visualize_model
+    模型可视化
+
+4: eval_model
+    模型性能评估: 准确率和召回率??
+
+5: model_interface
+    模型接口. 指定 图片 / 图片文件夹 作为输入
+
+configs
+    所有的配置信息configuration
