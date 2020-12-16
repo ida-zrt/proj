@@ -1,6 +1,6 @@
 import torch
 import torchvision
-debugMode = True
+debugMode = False
 if debugMode:
     image_folder = './data/hymenoptera_data/'
 else:
