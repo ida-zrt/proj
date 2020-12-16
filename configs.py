@@ -1,6 +1,6 @@
 import torch
 import torchvision
-debugMode = False
+debugMode = True
 if debugMode:
     image_folder = './data/hymenoptera_data/'
 else:
@@ -25,16 +25,16 @@ pretrained_weights_path_dict = {
     './weights/pretrained_weights/resnet/resnet18-5c106cde.pth',
     'resnet34':
     './weights/pretrained_weights/resnet/resnet34-333f7ec4.pth',
-    'resnet50':
-    './weights/pretrained_weights/resnet/resnet50-19c8e357.pth',
-    'resnet101':
-    './weights/pretrained_weights/resnet/resnet101-5d3b4d8f.pth',
-    'resnet152':
-    './weights/pretrained_weights/resnet/resnet152-b121ed2d.pth',
-    'resnext50_32x4d':
-    './weights/pretrained_weights/resnext/resnext50_32x4d-7cdf4587.pth',
-    'resnext101_32x8d':
-    './weights/pretrained_weights/resnext/resnext101_32x8d-8ba56ff5.pth'
+    # 'resnet50':
+    # './weights/pretrained_weights/resnet/resnet50-19c8e357.pth',
+    # 'resnet101':
+    # './weights/pretrained_weights/resnet/resnet101-5d3b4d8f.pth',
+    # 'resnet152':
+    # './weights/pretrained_weights/resnet/resnet152-b121ed2d.pth',
+    # 'resnext50_32x4d':
+    # './weights/pretrained_weights/resnext/resnext50_32x4d-7cdf4587.pth',
+    # 'resnext101_32x8d':
+    # './weights/pretrained_weights/resnext/resnext101_32x8d-8ba56ff5.pth'
 }
 
 noFreezeList = [
