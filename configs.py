@@ -1,7 +1,10 @@
 import torch
 import torchvision
-
-image_folder = './data/smoke_data/'
+debugMode = True
+if debugMode:
+    image_folder = './data/hymenoptera_data/'
+else:
+    image_folder = './data/smoke_data/'
 
 train_val_split = [0.8, 0.2]
 

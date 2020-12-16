@@ -85,7 +85,8 @@ def train_model(model,
 # freeze=All - lastLayer, tune = lastLayer
 # changed some layers to improve performace
 for model_name, weights in cfg.pretrained_weights_path_dict.items():
-
+    if cfg.debugMode:
+        break
     model = cfg.getmodel(model_name=model_name,
                          pretrained=True,
                          local_weight=True,
@@ -141,3 +142,35 @@ for model_name, weights in cfg.pretrained_weights_path_dict.items():
                         exp_lr_scheduler,
                         num_epochs=cfg.num_epochs,
                         model_name=model_name)
+
+if cfg.debugMode:
+    model = cfg.getmodel(
+        cfg.model_name,
+        pretrained=True,
+        local_weight=True,
+        weights=cfg.pretrained_weights_path_dict[cfg.model_name])
+
+    for param in model.parameters():
+        param.requires_grad = False
+
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Sequential()
+    model.fc.add_module('fc1', nn.Linear(num_ftrs, 256))
+
+    model.fc.add_module('dropout', nn.Dropout(0.5))
+
+    model.fc.add_module('fc2', nn.Linear(256, 2))
+
+    model = model.to(device)
+    criterion = nn.CrossEntropyLoss()
+    optimizer_conv = optim.SGD(model.fc.parameters(), lr=0.001, momentum=0.9)
+    exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv,
+                                           step_size=7,
+                                           gamma=0.1)
+
+    model = train_model(model,
+                        criterion,
+                        optimizer_conv,
+                        exp_lr_scheduler,
+                        num_epochs=10,
+                        model_name='resnet18_testmodel')
