@@ -75,40 +75,69 @@ def train_model(model,
 
     torch.save(model, './weights/{}_last.pth'.format(model_name))
     torch.save(best_model, './weights/{}_best.pth'.format(model_name))
+    print(
+        f"{model_name} training complete!, best weight path is ./weights/{model_name}_best.pth"
+    )
     return model
 
 
 # ************************************************************************* #
 # freeze=All - lastLayer, tune = lastLayer
 # changed some layers to improve performace
-model_name = cfg.model_name
+for model_name, weights in cfg.pretrained_weights_path_dict.items():
 
-model = cfg.getmodel(model_name=model_name,
-                     pretrained=True,
-                     local_weight=True,
-                     weights='./weights/resnet18-5c106cde.pth')
+    model = cfg.getmodel(model_name=model_name,
+                         pretrained=True,
+                         local_weight=True,
+                         weights=weights)
 
-# custom configurations:
-for param in model.parameters():
-    param.requires_grad = False
+    # custom configurations:
+    # if model_name not in cfg.noFreezeList:
+    for param in model.parameters():
+        param.requires_grad = False
 
-num_ftrs = model.fc.in_features
-model.fc = nn.Sequential()
-model.fc.add_module('fc1', nn.Linear(num_ftrs, 256))
+    if not model_name.startswith('mo'):
+        num_ftrs = model.fc.in_features
+        print(f'{model_name}\'s fc in features is {num_ftrs}')
+        # continue
+        model.fc = nn.Sequential()
+        i = 0
+        while num_ftrs > 256:
+            model.fc.add_module(f'fc{i}', nn.Linear(num_ftrs,
+                                                    int(num_ftrs / 2)))
+            model.fc.add_module('dropout', nn.Dropout(0.5))
+            num_ftrs = int(num_ftrs / 2)
+            i = i + 1
+        model.fc.add_module(f'fc{i+1}', nn.Linear(num_ftrs, 3))
+    else:
+        num_ftrs = 1280
+        print(f'{model_name}\'s classifier in features is {num_ftrs}')
+        # continue
+        model.classifier = nn.Sequential()
+        # model.classifier.add_module('dropout', nn.Dropout(0.2))
+        i = 0
+        while num_ftrs >= 512:
+            model.classifier.add_module(f'fc{i}',
+                                        nn.Linear(num_ftrs, int(num_ftrs / 2)))
+            model.classifier.add_module('dropout', nn.Dropout(0.5))
+            num_ftrs = int(num_ftrs / 2)
+            i = i + 1
+        model.classifier.add_module(f'fc{i+1}', nn.Linear(num_ftrs, 3))
 
-model.fc.add_module('dropout', nn.Dropout(0.5))
+    model = model.to(device)
 
-model.fc.add_module('fc2', nn.Linear(256, 2))
+    # loss func, optimizers and hyper-params
+    criterion = nn.CrossEntropyLoss()
 
-model = model.to(device)
+    if model_name in cfg.noFreezeList:
+        optm = optim.SGD(model.parameters(), lr=0.002, momentum=0.9)
+    else:
+        optm = optim.SGD(model.fc.parameters(), lr=0.002, momentum=0.9)
 
-# loss func, optimizers and hyper-params
-criterion = nn.CrossEntropyLoss()
-optimizer_conv = optim.SGD(model.fc.parameters(), lr=0.001, momentum=0.9)
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv, step_size=7, gamma=0.1)
-
-model = train_model(model,
-                    criterion,
-                    optimizer_conv,
-                    exp_lr_scheduler,
-                    num_epochs=cfg.num_epochs)
+    exp_lr_scheduler = lr_scheduler.StepLR(optm, step_size=7, gamma=0.1)
+    model = train_model(model,
+                        criterion,
+                        optm,
+                        exp_lr_scheduler,
+                        num_epochs=cfg.num_epochs,
+                        model_name=model_name)

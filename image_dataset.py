@@ -6,7 +6,7 @@ data_transforms = {
     'train':
     transforms.Compose([
         transforms.Resize(size=(165, 370)),
-        #transforms.RandomResizedCrop(224),
+        # transforms.RandomResizedCrop(size=(224, 224)),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -14,7 +14,7 @@ data_transforms = {
     'val':
     transforms.Compose([
         transforms.Resize(size=(165, 370)),
-        #transforms.CenterCrop(224),
+        # transforms.CenterCrop(size=(224, 224)),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
@@ -28,8 +28,7 @@ image_datasets = {
     datasets.ImageFolder(data_dir + 'train',
                          transform=data_transforms['train']),
     'val':
-    datasets.ImageFolder(data_dir + 'val',
-                         transform=data_transforms['val'])
+    datasets.ImageFolder(data_dir + 'val', transform=data_transforms['val'])
 }
 
 # dataloader
