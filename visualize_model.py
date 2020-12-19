@@ -58,6 +58,7 @@ def visualize_model(model, num_images=6, model_name=cfg.model_name):
         model.train(mode=was_training)
     fig.savefig('{}_test.png'.format(model_name), dpi=100)
 
+
 def visualize_model_err(model, num_images=6, model_name=cfg.model_name):
     was_training = model.training
     model.eval()
