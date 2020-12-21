@@ -28,7 +28,9 @@ out = torchvision.utils.make_grid(inputs)
 imshow(out, title=[class_names[x] for x in classes])
 
 
-def visualize_model(model, num_images=6, model_name=cfg.model_name):
+def visualize_model(model_name=cfg.model_name, num_images=6):
+    model = torch.load(f'./weights/{model_name}_best.pth')
+    model.to(cfg.device)
     was_training = model.training
     model.eval()
     images_so_far = 0
@@ -59,7 +61,9 @@ def visualize_model(model, num_images=6, model_name=cfg.model_name):
     fig.savefig('{}_test.png'.format(model_name), dpi=100)
 
 
-def visualize_model_err(model, num_images=6, model_name=cfg.model_name):
+def visualize_model_err(model_name=cfg.model_name, num_images=6):
+    model = torch.load(f'./weights/{model_name}_best.pth')
+    model.to(cfg.device)
     was_training = model.training
     model.eval()
     images_so_far = 0
@@ -73,12 +77,16 @@ def visualize_model_err(model, num_images=6, model_name=cfg.model_name):
             outputs = model(inputs)
             _, preds = torch.max(outputs, 1)
 
-            for j in range(inputs.size()[0]):
+            index = (preds.to('cpu').numpy() != labels.data)
+
+            err_images = inputs.cpu()[index, :, :, :]
+
+            for j in range(err_images.size()[0]):
                 images_so_far += 1
                 ax = plt.subplot(num_images // 2, 2, images_so_far)
                 ax.axis('off')
                 ax.set_title('predicted: {}'.format(class_names[preds[j]]))
-                imshow(inputs.cpu().data[j])
+                imshow(err_images.cpu().data[j])
 
                 if images_so_far == num_images:
                     break
@@ -87,11 +95,10 @@ def visualize_model_err(model, num_images=6, model_name=cfg.model_name):
                 break
 
         model.train(mode=was_training)
-    fig.savefig('{}_test.png'.format(model_name), dpi=100)
+    fig.savefig('{}_err_img.png'.format(model_name), dpi=100)
 
 
-# 获取训练好的模型
-model = cfg.getmodel(cfg.model_name, pretrained=False, local_weight=True)
-model = model.to(device)
 # 模型可视化
-visualize_model(model)
+for model_name in cfg.pretrained_weights_path_dict.keys():
+    visualize_model(model_name)
+    visualize_model_err(model_name)
