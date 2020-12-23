@@ -1,0 +1,6 @@
+mobilenet_v2 training complete!, best weight path is ./weights/mobilenet_v2_best.pth
+resnet18 training complete!, best weight path is ./weights/resnet18_best.pth
+resnet34 training complete!, best weight path is ./weights/resnet34_best.pth
+Best val Acc: 0.7576
+Best val Acc: 0.7452
+Best val Acc: 0.7455

@@ -47,17 +47,17 @@ big_small_dataloaders = {
     'small':
     torch.utils.data.DataLoader(big_small_datasets['small'],
                                 batch_size=32,
-                                shuffle=True,
+                                shuffle=False,
                                 num_workers=4),
     'medium':
     torch.utils.data.DataLoader(big_small_datasets['medium'],
                                 batch_size=32,
-                                shuffle=True,
+                                shuffle=False,
                                 num_workers=4),
     'big':
     torch.utils.data.DataLoader(big_small_datasets['big'],
                                 batch_size=32,
-                                shuffle=True,
+                                shuffle=False,
                                 num_workers=4)
 }
 
@@ -69,6 +69,11 @@ dataloaders = {
                                 shuffle=True,
                                 num_workers=4),
     'val':
+    torch.utils.data.DataLoader(image_datasets['val'],
+                                batch_size=4,
+                                shuffle=False,
+                                num_workers=4),
+    'val_random':
     torch.utils.data.DataLoader(image_datasets['val'],
                                 batch_size=4,
                                 shuffle=True,
