@@ -1,6 +1,10 @@
 import torch
 from torchvision import datasets, transforms
 import configs as cfg
+import cv2 as cv
+import glob
+import numpy as np
+import os
 
 data_transforms = {
     'train':
@@ -22,23 +26,55 @@ data_transforms = {
     ])
 }
 
+# remove old pyrdown images
+try:
+    old_pyd = np.load('pydImage.npy').tolist()
+    for name in old_pyd:
+        try:
+            os.remove(name)
+        except:
+            pass
+except:
+    pass
+
 # ImageFolder: label is the folder name, suitable for classification
 data_dir = cfg.image_folder
+
+# pyrdown operation to make image pyrmiads
+if cfg.pydaction:
+    temp = []
+    for cls in ['normal', 'phone', 'smoke']:
+        for name in glob.glob(data_dir + cls + '/*'):
+            img = cv.imread(name)
+            imgSize = img.shape[0] * img.shape[1]
+            actcode = np.random.randint(0, 4)
+            if actcode == 0 or imgSize < 224 * 224:
+                continue
+            else:
+                for _ in range(actcode):
+                    # img2 = cv.pyrDown(img)
+                    pass
+            newname = name[:-4] + f'_{actcode}.jpg'
+            # cv.imwrite(newname, img2)
+            temp.append(newname)
+            print(f'pyrdown level {actcode}, saved to {newname}')
+
+    np.save('pydImage', temp)
 
 image_datasets = {
     'train':
     datasets.ImageFolder(data_dir + 'train',
                          transform=data_transforms['train']),
     'val':
-    datasets.ImageFolder(data_dir + 'val',
-                         transform=data_transforms['val'])
+    datasets.ImageFolder(data_dir + 'val', transform=data_transforms['val'])
 }
 
 big_small_datasets = {
     'small':
     datasets.ImageFolder(data_dir + 'small', transform=data_transforms['val']),
     'medium':
-    datasets.ImageFolder(data_dir + 'medium', transform=data_transforms['val']),
+    datasets.ImageFolder(data_dir + 'medium',
+                         transform=data_transforms['val']),
     'big':
     datasets.ImageFolder(data_dir + 'big', transform=data_transforms['val'])
 }

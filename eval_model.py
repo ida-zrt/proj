@@ -4,6 +4,8 @@ import configs as cfg
 import matplotlib.pyplot as plt
 from itertools import cycle
 from sklearn import metrics
+from image_dataset import class_names
+
 for set_type in ['all', 'small', 'medium']:
     if set_type.startswith('a'):
         set_name = ''
@@ -31,11 +33,17 @@ for set_type in ['all', 'small', 'medium']:
         for i in range(n):
             fpr[i], tpr[i], _ = metrics.roc_curve(y_true[:, i], y_score[:, i])
             roc_auc[i] = metrics.auc(fpr[i], tpr[i])
+            print(
+                f'Auc score for class {class_names[i]} prediction: {roc_auc[i]} ({model_name} on set {set_type})'
+            )
 
         # Compute micro-average ROC curve and ROC area
         fpr["micro"], tpr["micro"], _ = metrics.roc_curve(
             y_true.ravel(), y_score.ravel())
         roc_auc["micro"] = metrics.auc(fpr["micro"], tpr["micro"])
+        print(
+            f'micro-average auc score: {roc_auc["micro"]} ({model_name} on set {set_type})'
+        )
 
         # Plot all ROC curves
         lw = 2
@@ -76,6 +84,9 @@ for set_type in ['all', 'small', 'medium']:
                 y_true[:, i], y_score[:, i])
             average_precision[i] = metrics.average_precision_score(
                 y_true[:, i], y_score[:, i], average='macro', pos_label=1)
+            print(
+                f'AP score for class {i} prediction: {roc_auc[i]} ({model_name} on set {set_type})'
+            )
 
         # 计算微定义AP
         # A "micro-average": quantifying score on all classes jointly
@@ -147,4 +158,12 @@ for set_type in ['all', 'small', 'medium']:
         corrects = np.sum(preds == lb)
         total = preds.shape[0]
 
-        print(f'Accuracy {corrects/total} ({model_name} on set {set_type})')
+        print(f'Accuracy: {corrects/total} ({model_name} on set {set_type})')
+
+        for i in range(3):
+            lb_class = lb[lb == i]
+            preds_class = preds[lb == i]
+            acc = np.sum(lb_class == preds_class) / preds_class.shape[0]
+            print(
+                f'Accuracy on class {class_names[i]}: {acc} ({model_name} on set {set_type})'
+            )

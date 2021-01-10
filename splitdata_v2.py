@@ -81,17 +81,10 @@ for name in cls_names:
             picname = os.path.split(pic)[1]
             shutil.copy(pic, path + picname)
             small_cnt = small_cnt + 1
-        elif size >= 224 * 224 and size < 1792 * 1792:
+        else:
             path = './data/smoke_data/medium/{}/'.format(name)
             if not os.path.exists(path):
                 os.makedirs(path)
             picname = os.path.split(pic)[1]
             shutil.copy(pic, path + picname)
             medium_cnt = medium_cnt + 1
-        else:
-            path = './data/smoke_data/big/{}/'.format(name)
-            if not os.path.exists(path):
-                os.makedirs(path)
-            picname = os.path.split(pic)[1]
-            shutil.copy(pic, path + picname)
-            big_cnt = big_cnt + 1

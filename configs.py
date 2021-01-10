@@ -16,6 +16,7 @@ num_epochs = 50
 # test it with torchvision.models.model_name(pretrained)
 model_name = 'resnet18'
 defaut_weight = './weights/{}_best.pth'.format(model_name)
+pydaction = False
 
 # model zoo
 pretrained_weights_path_dict = {

@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from image_dataset import data_transforms, class_names
 from configs import device
+import matplotlib.pyplot as plt
 import sys
 
 test_data = './data/smoke_data/val/smoke/6723.jpg'
@@ -18,3 +19,7 @@ with torch.no_grad:
     _, pred = torch.max(out, 1)
 
 print(f'predicted label: {class_names[pred.cpu().data]}')
+
+plt.imshow(image)
+plt.title(f'predicted: {class_names[pred.cpu().data]}')
+plt.show()

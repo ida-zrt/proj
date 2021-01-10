@@ -48,7 +48,6 @@ def visualize_model(model_name=cfg.model_name, num_images=9):
                 images_so_far += 1
                 ax = plt.subplot(num_images // 3, 3, images_so_far)
                 ax.axis('off')
-                # ax.set_title('predicted: {}'.format(class_names[preds[j]]))
                 ax.set_title('{}/{}'.format(class_names[preds[j]],
                                             class_names[labels[j]]))
                 imshow(inputs.cpu().data[j])
